@@ -1,8 +1,8 @@
 ﻿{
-  "version": "1.0.0-*",
-  "description": "",
-  "authors": [ "" ],
-  "tags": [ "" ],
+  "version": "0.0.1",
+  "description": "A fluent library for creating dynamic types.",
+  "authors": [ "Stuart Blackler", "Tommy Long" ],
+  "tags": [ "Compose", "Dynamics" ],
   "projectUrl": "",
   "licenseUrl": "",
 
@@ -10,7 +10,7 @@
   },
 
   "frameworks" : {
-    "dnx451": { },
+    "net45": { },
     "dnxcore50" : {
       "dependencies": {
         "System.Collections": "4.0.10-beta-22816",
