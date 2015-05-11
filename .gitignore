@@ -197,3 +197,4 @@ FakesAssemblies/
 
 *.ide
 *.lock.json
+[Aa]rtifacts/
