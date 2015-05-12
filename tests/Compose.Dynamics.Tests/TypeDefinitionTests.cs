@@ -40,10 +40,10 @@ namespace Compose.Dynamics.Tests
             {
                 var typeDefinition = new TypeDefinition();
 
-                var inheritanceDefinition = typeDefinition.InheritsFrom<TypeDefinition>();
+                var inheritanceDefinition = typeDefinition.InheritsFrom<UnsealedType>();
 
                 typeDefinition.InheritanceChain.Should().HaveCount(1);
-                typeDefinition.InheritanceChain.First().InheritedFrom.Should().Be(typeof(TypeDefinition).GetTypeInfo());
+                typeDefinition.InheritanceChain.First().InheritedFrom.Should().Be(typeof(UnsealedType).GetTypeInfo());
             }
 
             [Fact]
@@ -51,10 +51,10 @@ namespace Compose.Dynamics.Tests
             {
                 var typeDefinition = new TypeDefinition();
 
-                var inheritanceDefinition = typeDefinition.InheritsFrom(typeof(TypeDefinition));
+                var inheritanceDefinition = typeDefinition.InheritsFrom(typeof(UnsealedType));
 
                 typeDefinition.InheritanceChain.Should().HaveCount(1);
-                typeDefinition.InheritanceChain.First().InheritedFrom.Should().Be(typeof(TypeDefinition).GetTypeInfo());
+                typeDefinition.InheritanceChain.First().InheritedFrom.Should().Be(typeof(UnsealedType).GetTypeInfo());
             }
 
             [Fact]
@@ -62,10 +62,10 @@ namespace Compose.Dynamics.Tests
             {
                 var typeDefinition = new TypeDefinition();
 
-                var inheritanceDefinition = typeDefinition.InheritsFrom(typeof(TypeDefinition).GetTypeInfo());
+                var inheritanceDefinition = typeDefinition.InheritsFrom(typeof(UnsealedType).GetTypeInfo());
 
                 typeDefinition.InheritanceChain.Should().HaveCount(1);
-                typeDefinition.InheritanceChain.First().InheritedFrom.Should().Be(typeof(TypeDefinition).GetTypeInfo());
+                typeDefinition.InheritanceChain.First().InheritedFrom.Should().Be(typeof(UnsealedType).GetTypeInfo());
             }
 
             [Fact]
@@ -73,7 +73,7 @@ namespace Compose.Dynamics.Tests
             {
                 var typeDefinition = new TypeDefinition();
 
-                var inheritanceDefinition = typeDefinition.InheritsFrom<TypeDefinition>();
+                var inheritanceDefinition = typeDefinition.InheritsFrom<UnsealedType>();
                 Action act = () => typeDefinition.InheritsFrom<Type>();
 
                 act.ShouldThrow<InvalidOperationException>();
@@ -84,8 +84,8 @@ namespace Compose.Dynamics.Tests
             {
                 var typeDefinition = new TypeDefinition();
 
-                typeDefinition.InheritsFrom<TypeDefinition>();
-                typeDefinition.InheritsFrom<TypeDefinition>();
+                typeDefinition.InheritsFrom<UnsealedType>();
+                typeDefinition.InheritsFrom<UnsealedType>();
 
                 typeDefinition.InheritanceChain.Should().HaveCount(1);
             }
@@ -139,6 +139,19 @@ namespace Compose.Dynamics.Tests
 
                 act.ShouldThrow<NotSupportedException>();
             }
+
+            [Fact]
+            public void WhenSuppliedASealedTypeThenThrowNotSupportedException()
+            {
+                var definition = new TypeDefinition();
+
+                Action act = () => definition.InheritsFrom<SealedType>();
+
+                act.ShouldThrow<NotSupportedException>();
+            }
+
+            private sealed class SealedType { }
+            private class UnsealedType { }
         }
 
         public class HasConstructor
@@ -344,6 +357,74 @@ namespace Compose.Dynamics.Tests
 
                 typeDefinition.IsAbstract.Should().BeFalse();
             }
+        }
+
+        public class Implements
+        {
+            [Fact]
+            public void WhenSuppliedAClassThenThrowNotSupportException()
+            {
+                var definition = new TypeDefinition();
+
+                Action act = () => definition.Implements<StandardClass>();
+
+                act.ShouldThrow<NotSupportedException>();
+            }
+
+            [Fact]
+            public void WhenSuppliedAStructThenThrowsNotSupportedException()
+            {
+                var definition = new TypeDefinition();
+
+                Action act = () => definition.Implements<StandardStruct>();
+
+                act.ShouldThrow<NotSupportedException>();
+            }
+
+            [Fact]
+            public void WhenSuppliedAnInterfaceThenDefinitionIsAddedToCollection()
+            {
+                var definition = new TypeDefinition();
+
+                definition.Implements<IPropertyDefinition>();
+
+                definition.Implementations.Should().HaveCount(1);
+            }
+
+            [Fact]
+            public void WhenSuppliedAnInterfaceAsATypeThenDefinitionIsAddedToCollection()
+            {
+                var definition = new TypeDefinition();
+
+                definition.Implements(typeof(IPropertyDefinition));
+
+                definition.Implementations.Should().HaveCount(1);
+            }
+
+            [Fact]
+            public void WhenSuppliedAnInterfaceAsTypeInfoThenDefinitionIsAddedToCollection()
+            {
+                var definition = new TypeDefinition();
+
+                definition.Implements(typeof(IPropertyDefinition).GetTypeInfo());
+
+                definition.Implementations.Should().HaveCount(1);
+            }
+
+            [Fact]
+            public void WhenSuppliedADuplicateInterfaceThenNoExceptionIsThrowAndOnlyInterfaceIsRegestered()
+            {
+                var definition = new TypeDefinition();
+
+                definition.Implements<IPropertyDefinition>();
+                definition.Implements<IPropertyDefinition>();
+
+                definition.Implementations.Should().HaveCount(1);
+            }
+
+
+            private class StandardClass { }
+            private struct StandardStruct { }
         }
     }
 }

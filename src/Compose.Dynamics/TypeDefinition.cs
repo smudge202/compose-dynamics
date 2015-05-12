@@ -14,15 +14,17 @@ namespace Compose.Dynamics
         private readonly List<IPropertyDefinition> _properties = new List<IPropertyDefinition>();
         private readonly List<IConstructorDefinition> _constructors = new List<IConstructorDefinition>();
         private readonly List<IMethodDefinition> _methods = new List<IMethodDefinition>();
+        private readonly List<TypeInfo> _implements = new List<TypeInfo>();
         private static readonly IParameterDefinition[] _emptyParameterTypes = new IParameterDefinition[0];
         private VisibilityScope _currentVisbilityScope;
         internal VisibilityScope CurrentVisibiltyScope => _currentVisbilityScope;
-        internal IEnumerable<IConstructorDefinition> Constructors => _constructors;
-        internal IEnumerable<IPropertyDefinition> Properties => _properties;
-        internal IEnumerable<IInheritanceDefinition> InheritanceChain => _inheritanceChain;
-        internal IEnumerable<IMethodDefinition> Methods => _methods;
+        internal IEnumerable<IConstructorDefinition> Constructors => _constructors.ToArray();
+        internal IEnumerable<IPropertyDefinition> Properties => _properties.ToArray();
+        internal IEnumerable<IInheritanceDefinition> InheritanceChain => _inheritanceChain.ToArray();
+        internal IEnumerable<IMethodDefinition> Methods => _methods.ToArray();
         internal bool IsSealed => _seal;
         internal bool IsAbstract => _abstract;
+        internal TypeInfo[] Implementations => _implements.ToArray();
 
 
         public TypeDefinition(VisibilityScope visibilityScope)
@@ -76,6 +78,26 @@ namespace Compose.Dynamics
         }
 
 
+        public TypeDefinition Implements<T>() => Implements(typeof(T));
+        public TypeDefinition Implements(Type implementationType)
+        {
+            if (implementationType == null)
+                throw new ArgumentNullException(nameof(implementationType));
+
+            return Implements(implementationType.GetTypeInfo());
+        }
+        public TypeDefinition Implements(TypeInfo implementationType)
+        {
+            if (!implementationType.IsInterface)
+                throw new NotSupportedException("You can only implement interfaces. Please you InheritsFrom() for classes.");
+
+            if (!_implements.Contains(implementationType))
+                _implements.Add(implementationType);
+
+            return this;
+        }   
+
+
         public TypeDefinition InheritsFrom<T>() => InheritsFrom(typeof(T));
         public TypeDefinition InheritsFrom(Type inheritFrom)
         {
@@ -91,6 +113,9 @@ namespace Compose.Dynamics
 
             if (inheritFrom.IsInterface)
                 throw new NotSupportedException("Interfaces should be added via the .Implements() API");
+
+            if (inheritFrom.IsSealed)
+                throw new NotSupportedException("Sealed classes cannot be inherited");
 
             if (InheritanceChain.Any(x => x.InheritedFrom == inheritFrom))
                 return this;
