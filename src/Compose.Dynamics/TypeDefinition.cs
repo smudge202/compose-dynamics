@@ -29,7 +29,7 @@ namespace Compose.Dynamics
         {
             _currentVisbilityScope = visibilityScope;
         }
-        public TypeDefinition() : this(VisibilityScope.Public) { }
+        public TypeDefinition() : this(VisibilityScope.Internal) { }
 
 
         public TypeDefinition AsAbstract()
@@ -51,32 +51,26 @@ namespace Compose.Dynamics
         }
 
 
-        public IMethodDefinition HasMethod(string methodName) => HasMethod(methodName, Type.GetType("System.Void"));
-        public IMethodDefinition HasMethod(string methodName, Type returnType) => HasMethod(methodName, returnType, _emptyParameterTypes);
-        public IMethodDefinition HasMethod(string methodName, Type returnType, IEnumerable<IParameterDefinition> parameters)
+        public IMethodDefinition HasMethod() => HasMethod(Type.GetType("System.Void"));
+        public IMethodDefinition HasMethod(Type returnType) => HasMethod(returnType, _emptyParameterTypes);
+        public IMethodDefinition HasMethod(Type returnType, IEnumerable<IParameterDefinition> parameters)
         {
-            if (string.IsNullOrWhiteSpace(methodName))
-                throw new ArgumentNullException(nameof(methodName));
-
             if (returnType == null)
                 throw new ArgumentNullException(nameof(returnType));
 
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
-            var definition = new MethodDefinition(this, _currentVisbilityScope, methodName, returnType, parameters.ToArray());
+            var definition = new MethodDefinition(this, VisibilityScope.Private, returnType, parameters.ToArray());
             _methods.Add(definition);
             return definition;
         }
 
 
-        public IPropertyDefinition HasProperty<T>(string propertyName) => HasProperty<T>(CurrentVisibiltyScope, propertyName);
-        public IPropertyDefinition HasProperty<T>(VisibilityScope scope, string propertyName)
+        public IPropertyDefinition HasProperty<T>() => HasProperty<T>(CurrentVisibiltyScope);
+        public IPropertyDefinition HasProperty<T>(VisibilityScope scope)
         {
-            if (string.IsNullOrWhiteSpace(propertyName))
-                throw new ArgumentNullException(nameof(propertyName));
-
-            var definition = new PropertyDefinition(this, scope, typeof(T).GetTypeInfo(), propertyName);
+            var definition = new PropertyDefinition(this, scope, typeof(T).GetTypeInfo());
             _properties.Add(definition);
             return definition;
         }
@@ -94,6 +88,9 @@ namespace Compose.Dynamics
         {
             if (inheritFrom == null)
                 throw new ArgumentNullException(nameof(inheritFrom));
+
+            if (inheritFrom.IsInterface)
+                throw new NotSupportedException("Interfaces should be added via the .Implements() API");
 
             if (InheritanceChain.Any(x => x.InheritedFrom == inheritFrom))
                 return this;

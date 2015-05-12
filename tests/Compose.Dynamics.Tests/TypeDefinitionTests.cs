@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Compose.Dynamics.Definitions;
+using FluentAssertions;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -24,11 +25,11 @@ namespace Compose.Dynamics.Tests
             }
 
             [Fact]
-            public void WhenConstructorIsNotPassedAVisibiltyScopeThenVisbilityScopeDefaultsToPublic()
+            public void WhenConstructorIsNotPassedAVisibiltyScopeThenVisbilityScopeDefaultsToInternal()
             {
                 var typeDefinition = new TypeDefinition();
 
-                typeDefinition.CurrentVisibiltyScope.Should().Be(VisibilityScope.Public);
+                typeDefinition.CurrentVisibiltyScope.Should().Be(VisibilityScope.Internal);
             }
         }
 
@@ -108,6 +109,36 @@ namespace Compose.Dynamics.Tests
 
                 act.ShouldThrow<ArgumentNullException>();
             }
+
+            [Fact]
+            public void WhenSuppliedAnInterfaceAsGenericThenThrowsNotSupportedException()
+            {
+                var definition = new TypeDefinition();
+
+                Action act = () => definition.InheritsFrom<IFluentDefinition>();
+
+                act.ShouldThrow<NotSupportedException>();
+            }
+
+            [Fact]
+            public void WhenSuppliedAnInterfaceAsTypeThenThrowsNotSupportedException()
+            {
+                var definition = new TypeDefinition();
+
+                Action act = () => definition.InheritsFrom(typeof(IFluentDefinition));
+
+                act.ShouldThrow<NotSupportedException>();
+            }
+
+            [Fact]
+            public void WhenSuppliedAnInterfaceAsTypeInfoThenThrowsNotSupportedException()
+            {
+                var definition = new TypeDefinition();
+
+                Action act = () => definition.InheritsFrom(typeof(IFluentDefinition).GetTypeInfo());
+
+                act.ShouldThrow<NotSupportedException>();
+            }
         }
 
         public class HasConstructor
@@ -148,7 +179,7 @@ namespace Compose.Dynamics.Tests
             public void WhenNotSuppliedWithVisibilityScopeThenPropertyDefinitionIsScopedToTypeDefinition(VisibilityScope scope)
             {
                 var typeDefinition = new TypeDefinition(scope);
-                var propertyDefinition = typeDefinition.HasProperty<Guid>("TestProperty");
+                var propertyDefinition = typeDefinition.HasProperty<Guid>();
 
                 propertyDefinition.ReadScope.Should().Be(scope);
                 propertyDefinition.WriteScope.Should().Be(scope);
@@ -159,7 +190,7 @@ namespace Compose.Dynamics.Tests
             {
                 var typeDefinition = new TypeDefinition();
 
-                var PropertyDefinition = typeDefinition.HasProperty<Guid>("TestProperty");
+                var PropertyDefinition = typeDefinition.HasProperty<Guid>();
 
                 typeDefinition.Properties.Should().HaveCount(1);
                 typeDefinition.Properties.First().Should().Be(PropertyDefinition);
@@ -169,54 +200,26 @@ namespace Compose.Dynamics.Tests
             public void WhenPropertyDefinedThenPropertyDefinitionMustHaveCorrectProperties()
             {
                 const VisibilityScope scope = VisibilityScope.Protected;
-                const string propertyName = "TestProperty";
                 var typeDefinition = new TypeDefinition();
 
-                var propertyDefinition = typeDefinition.HasProperty<Guid>(scope, propertyName);
+                var propertyDefinition = typeDefinition.HasProperty<Guid>(scope);
 
                 propertyDefinition.ReadScope.Should().Be(scope);
                 propertyDefinition.WriteScope.Should().Be(scope);
                 propertyDefinition.CanRead.Should().Be(true);
                 propertyDefinition.CanWrite.Should().Be(true);
-                propertyDefinition.PropertyName.Should().Be(propertyName);
                 propertyDefinition.PropertyType.Should().Be(typeof(Guid).GetTypeInfo());
-            }
-
-            [Theory]
-            [InlineData(null)]
-            [InlineData("")]
-            [InlineData("  ")]
-            public void WhenPropertyNameIsNullOrEmptyThenPropertyDefinitionMustThrowArgumentNullException(string propertyName)
-            {
-                var typeDefinition = new TypeDefinition();
-
-                Action act = () => typeDefinition.HasProperty<Guid>(propertyName);
-
-                act.ShouldThrow<ArgumentNullException>();
             }
         }
 
         public class HasMethod
         {
-            [Theory]
-            [InlineData(null)]
-            [InlineData("")]
-            [InlineData("  ")]
-            public void WhenMethodNameIsNullOrEmptyThenMethodMustThrowArgumentNullException(string methodName)
-            {
-                var typeDefinition = new TypeDefinition();
-
-                Action act = () => typeDefinition.HasMethod(methodName);
-
-                act.ShouldThrow<ArgumentNullException>();
-            }
-
             [Fact]
             public void WhenReturnTypeIsNullThenMethodMustThrowArgumentNullException()
             {
                 var typeDefinition = new TypeDefinition();
 
-                Action act = () => typeDefinition.HasMethod("TestMethod", null);
+                Action act = () => typeDefinition.HasMethod(null);
 
                 act.ShouldThrow<ArgumentNullException>();
             }
@@ -226,7 +229,7 @@ namespace Compose.Dynamics.Tests
             {
                 var typeDefinition = new TypeDefinition();
 
-                Action act = () => typeDefinition.HasMethod("TestMethod", typeof(Type), null);
+                Action act = () => typeDefinition.HasMethod(typeof(Type), null);
 
                 act.ShouldThrow<ArgumentNullException>();
             }
@@ -234,12 +237,10 @@ namespace Compose.Dynamics.Tests
             [Fact]
             public void WhenProvidedWithMethodNameThenMethodShouldHaveNoParametersAndReturnTypeMustBeVoid()
             {
-                const string methodName = "TestMethod";
                 var typeDefinition = new TypeDefinition();
 
-                var methodDefinition = typeDefinition.HasMethod(methodName);
+                var methodDefinition = typeDefinition.HasMethod();
 
-                methodDefinition.MethodName.Should().Be(methodName);
                 methodDefinition.ReturnType.Should().Be(Type.GetType("System.Void"));
                 methodDefinition.Parameters.Should().HaveCount(0);
             }
@@ -269,10 +270,10 @@ namespace Compose.Dynamics.Tests
             [InlineData(VisibilityScope.Private)]
             public void WhenPassedNewVisibilityScopeThenPreviousScopesDoNotChange(VisibilityScope newScope)
             {
-                var initialScope = VisibilityScope.Public;
+                var initialScope = VisibilityScope.Private;
                 var typeDefinition = new TypeDefinition(initialScope);
 
-                var methodScope = typeDefinition.HasMethod("TestMethod");
+                var methodScope = typeDefinition.HasMethod();
 
                 typeDefinition.WithVisibilityScope(newScope);
 

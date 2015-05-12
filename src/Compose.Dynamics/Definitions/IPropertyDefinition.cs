@@ -9,6 +9,6 @@ namespace Compose.Dynamics.Definitions
         VisibilityScope ReadScope { get; }
         VisibilityScope WriteScope { get; }
         TypeInfo PropertyType { get; }
-        string PropertyName { get; }
+        string PropertyName { get; set; }
     }
 }
