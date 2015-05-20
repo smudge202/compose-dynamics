@@ -82,6 +82,37 @@ namespace Compose.Dynamics.Tests
                 definition.Parameters.First().ParameterName.Should().Be(parameterName);
                 definition.Parameters.First().ParameterType.Should().Be(parameterType);
             }
+
+            [Fact]
+            public void WhenDefinitionIsNullThenThrowArgumentNullException()
+            {
+                var definition = default(IConstructorDefinition);
+
+                Action act = () => ConstructorDefinitionExtensions.Takes(definition, new ParameterDefinition("Test", typeof(string).GetTypeInfo()));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenDefinitionIsNullOnOverload2ThenThrowArgumentNullException()
+            {
+                var definition = default(IConstructorDefinition);
+
+                Action act = () => ConstructorDefinitionExtensions.Takes<string>(definition, "Test");
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+
+            [Fact]
+            public void WhenDefinitionIsNullOnOverload3ThenThrowArgumentNullException()
+            {
+                var definition = default(IConstructorDefinition);
+
+                Action act = () => ConstructorDefinitionExtensions.Takes(definition, new[] { new ParameterDefinition("Test", typeof(string).GetTypeInfo()) });
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
         }
     }
 }
