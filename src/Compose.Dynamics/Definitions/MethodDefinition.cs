@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 
 namespace Compose.Dynamics.Definitions
 {
@@ -8,21 +9,21 @@ namespace Compose.Dynamics.Definitions
         private readonly IParameterDefinition[] _parameterDefinition;
         private readonly Type _returnType;
         private readonly TypeDefinition _parentDefinition;
-        private VisibilityScope _currentVisbilityScope;
 
         public string MethodName { get; set; }
+        public Action<ILGenerator, int> MethodBody { get; set; }
         public IEnumerable<IParameterDefinition> Parameters => _parameterDefinition;
         public Type ReturnType => _returnType;
-        public VisibilityScope Scope => _currentVisbilityScope;
+        public VisibilityScope Scope { get; set; }
 
         public TypeDefinition And => _parentDefinition;
 
         public MethodDefinition(TypeDefinition parentDefinition, VisibilityScope currentVisbilityScope, Type returnType, IParameterDefinition[] parameterDefinition)
         {
-            _parameterDefinition = parameterDefinition;
-            _currentVisbilityScope = currentVisbilityScope;
+            _parentDefinition = parentDefinition;
             _returnType = returnType;
             _parameterDefinition = parameterDefinition;
+            Scope = currentVisbilityScope;
         }
     }
 }

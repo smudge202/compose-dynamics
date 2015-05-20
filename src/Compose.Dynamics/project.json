@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "0.0.1",
   "description": "A fluent library for creating dynamic types.",
   "authors": [ "Stuart Blackler", "Tommy Long" ],
@@ -9,14 +9,23 @@
   "dependencies": {
   },
 
-  "frameworks" : {
-    "net45": { },
-    "dnxcore50" : {
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Reflection.Emit": "4.0.0.0"
+      },
       "dependencies": {
-        "System.Collections": "4.0.10-beta-22816",
-        "System.Linq": "4.0.0-beta-22816",
-        "System.Threading": "4.0.10-beta-22816",
-        "Microsoft.CSharp": "4.0.0-beta-22816"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Collections": "4.0.10-beta-*",
+        "System.Linq": "4.0.0-beta-*",
+        "System.Threading": "4.0.10-beta-*",
+        "Microsoft.CSharp": "4.0.0-beta-*",
+        "System.Reflection": "4.0.10-beta-*",
+        "System.Reflection.Emit": "4.0.0-beta-*",
+        "System.Reflection.Extensions": "4.0.0-beta-*"
       }
     }
   }

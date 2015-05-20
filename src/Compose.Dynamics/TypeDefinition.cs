@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Compose.Dynamics
@@ -53,12 +54,12 @@ namespace Compose.Dynamics
         }
 
 
-        public IMethodDefinition HasMethod() => HasMethod(Type.GetType("System.Void"));
+        public IMethodDefinition HasMethod() => HasMethod(default(Type));
         public IMethodDefinition HasMethod(Type returnType) => HasMethod(returnType, _emptyParameterTypes);
         public IMethodDefinition HasMethod(Type returnType, IEnumerable<IParameterDefinition> parameters)
         {
             if (returnType == null)
-                throw new ArgumentNullException(nameof(returnType));
+                returnType = Type.GetType("System.Void");
 
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -67,7 +68,28 @@ namespace Compose.Dynamics
             _methods.Add(definition);
             return definition;
         }
+        public IMethodDefinition HasMethod<T>(Expression<Action<T>> methodBody) => CreateMethodFromExpression(methodBody);
+        public IMethodDefinition HasMethod<T1, T2>(Expression<Action<T1, T2>> methodBody) => CreateMethodFromExpression(methodBody);
+        public IMethodDefinition HasMethod<T1, T2, T3>(Expression<Action<T1, T2, T3>> methodBody) => CreateMethodFromExpression(methodBody);
+        public IMethodDefinition HasMethod<T1, T2, T3, T4>(Expression<Action<T1, T2, T3, T4>> methodBody) => CreateMethodFromExpression(methodBody);
+        public IMethodDefinition HasMethod<TResult>(Expression<Func<TResult>> methodBody) => CreateMethodFromExpression(methodBody); 
+        public IMethodDefinition HasMethod<T, TResult>(Expression<Func<T, TResult>> methodBody) => CreateMethodFromExpression(methodBody);
+        public IMethodDefinition HasMethod<T1, T2, TResult>(Expression<Func<T1, T2, TResult>> methodBody) => CreateMethodFromExpression(methodBody);
+        public IMethodDefinition HasMethod<T1, T2, T3, TResult>(Expression<Func<T1, T2, T3, TResult>> methodBody) => CreateMethodFromExpression(methodBody);
+        public IMethodDefinition HasMethod<T1, T2, T3, T4, TResult>(Expression<Func<T1, T2, T3, T4, TResult>> methodBody) => CreateMethodFromExpression(methodBody);
+        private IMethodDefinition CreateMethodFromExpression(Expression methodBody)
+        {
+            if (methodBody == null)
+                throw new ArgumentNullException(nameof(methodBody));
 
+            var definition = HasMethod();
+            var lambda = (LambdaExpression)methodBody;
+            var methodInfo = lambda.Compile().GetType().GetRuntimeMethod("Invoke", lambda.Parameters.Select(param => param.Type).ToArray());
+            var returnType = methodInfo.ReturnType;
+            var parameters = lambda.Parameters.Select(param => new ParameterDefinition(param.Name, param.Type.GetTypeInfo()));
+
+            return HasMethod(returnType, parameters).WithMethodBody(methodInfo);
+        }
 
         public IPropertyDefinition HasProperty<T>() => HasProperty<T>(CurrentVisibiltyScope);
         public IPropertyDefinition HasProperty<T>(VisibilityScope scope)
