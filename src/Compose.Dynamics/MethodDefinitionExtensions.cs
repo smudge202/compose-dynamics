@@ -23,33 +23,27 @@ namespace Compose.Dynamics
                     il.Emit(OpCodes.Ldnull);
                 else
                 {
-                    for (var i = 1; i <= parameters.Length; i++)
-                        il.Emit(OpCodes.Ldarg, i);
-
                     var voidType = Type.GetType("System.Void");
+                    ConstructorInfo ci = null;
+                    Type methodType;
                     if (methodInfo.ReturnType == voidType)
                     {
-                        var actionType = typeof(Action<>).MakeGenericType(parameters);
-                        il.DeclareLocal(actionType);
-                        if (methodInfo.DeclaringType == actionType)
-                        {
-                            il.Emit(OpCodes.Ldftn, methodInfo);
-                            il.Emit(OpCodes.Newobj, actionType.GetConstructors()[0]);
-                            il.Emit(OpCodes.Stloc_0);
-                            il.Emit(OpCodes.Ldloc_0);
-                        }
+                        methodType = typeof(Action<>).MakeGenericType(parameters);
+                        if (methodInfo.DeclaringType == methodType)
+                            ci = methodType.GetConstructors()[0];
                     }
                     else
                     {
-                        var funcType = typeof(Func<>).MakeGenericType(parameters.Concat(new[] { methodInfo.ReturnType }).ToArray());
-                        if (methodInfo.DeclaringType == funcType)
-                        {
-                            il.DeclareLocal(funcType);
-                            il.Emit(OpCodes.Newobj, funcType.GetConstructors()[0]);
-                            il.Emit(OpCodes.Stloc_0);
-                            il.Emit(OpCodes.Ldloc_0);
-                        }
+                        methodType = typeof(Func<>).MakeGenericType(parameters.Concat(new[] { methodInfo.ReturnType }).ToArray());
+                        if (methodInfo.DeclaringType == methodType)
+                            ci = methodType.GetConstructors()[0];
                     }
+
+                    il.DeclareLocal(methodType);
+                    il.Emit(OpCodes.Ldftn, methodInfo);
+                    il.Emit(OpCodes.Newobj, ci);
+                    il.Emit(OpCodes.Stloc_0);
+                    il.Emit(OpCodes.Ldloc_0);
                 }
 
                 il.DeclareLocal(typeof(object[]));
