@@ -11,7 +11,7 @@ namespace Compose.Dynamics.Definitions
         private readonly TypeDefinition _parentDefinition;
 
         public string MethodName { get; set; }
-        public Action<ILGenerator, int> MethodBody { get; set; }
+        public Action<ILGenerator, Type[]> MethodBody { get; set; }
         public IEnumerable<IParameterDefinition> Parameters => _parameterDefinition;
         public Type ReturnType => _returnType;
         public VisibilityScope Scope { get; set; }

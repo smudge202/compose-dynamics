@@ -1,6 +1,8 @@
 ﻿using Compose.Dynamics.Definitions;
 using FluentAssertions;
 using System;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 using Xunit;
@@ -49,7 +51,7 @@ namespace Compose.Dynamics.Tests
                 var typeDefinition = new TypeDefinition();
                 var methodDefinition = typeDefinition.HasMethod();
 
-                Action act = () => MethodDefinitionExtensions.WithMethodBody(methodDefinition, (Action<ILGenerator, int>)null);
+                Action act = () => MethodDefinitionExtensions.WithMethodBody(methodDefinition, (Action<ILGenerator, Type[]>)null);
 
                 act.ShouldThrow<ArgumentNullException>();
             }
@@ -75,7 +77,41 @@ namespace Compose.Dynamics.Tests
                 methodDefinition.MethodBody.Should().NotBeNull();
             }
 
+            [Fact]
+            public void GivenAnActionOfTThenCanInvokeWithoutError()
+            {
+                var isInvoked = false;
+                var definition = new TypeDefinition().HasMethod<Fake>(x => TestInvoke(ref isInvoked));
+
+                try
+                {
+                    GenerateTestMethodInvokationAction(definition)();
+                }
+                catch(Exception ex)
+                {
+                    throw ex;
+                }
+
+                isInvoked.Should().BeTrue();
+            }
+
             private static MethodInfo GetStandardMethodBody(string methodName, Type returnType, params Type[] parameters) => new DynamicMethod(methodName, returnType, parameters);
+
+            private static Action GenerateTestMethodInvokationAction(IMethodDefinition definition)
+            {
+                var parameters = definition.Parameters.Select(x => x.ParameterType).ToArray();
+                var dm = new DynamicMethod("Test", definition.ReturnType, parameters);
+                definition.MethodBody(dm.GetILGenerator(), parameters);
+                return () => dm.Invoke(null, Enumerable.Repeat(default(Fake), definition.Parameters.Count()).ToArray());
+            }
+
+            private void TestInvoke(ref bool invoked)
+            {
+                invoked = true;
+            }
+
+            public class Fake
+            { }
         }
 
         public class WithScope

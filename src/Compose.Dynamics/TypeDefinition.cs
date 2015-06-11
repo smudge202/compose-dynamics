@@ -84,7 +84,8 @@ namespace Compose.Dynamics
 
             var definition = HasMethod();
             var lambda = (LambdaExpression)methodBody;
-            var methodInfo = lambda.Compile().GetType().GetRuntimeMethod("Invoke", lambda.Parameters.Select(param => param.Type).ToArray());
+            var target = lambda.Compile();
+            var methodInfo = target.GetType().GetRuntimeMethod("Invoke", lambda.Parameters.Select(param => param.Type).ToArray());
             var returnType = methodInfo.ReturnType;
             var parameters = lambda.Parameters.Select(param => new ParameterDefinition(param.Name, param.Type.GetTypeInfo()));
 
