@@ -2,6 +2,7 @@
 using FluentAssertions;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Xunit;
 
@@ -228,13 +229,13 @@ namespace Compose.Dynamics.Tests
         public class HasMethod
         {
             [Fact]
-            public void WhenReturnTypeIsNullThenMethodMustThrowArgumentNullException()
+            public void WhenReturnTypeIsNullThenMethodDefinitionHasVoidReturnType()
             {
                 var typeDefinition = new TypeDefinition();
 
-                Action act = () => typeDefinition.HasMethod(null);
+                var methodDefinition = typeDefinition.HasMethod(default(Type));
 
-                act.ShouldThrow<ArgumentNullException>();
+                methodDefinition.ReturnType.Should().Be(Type.GetType("System.Void"));
             }
 
             [Fact]
@@ -256,6 +257,201 @@ namespace Compose.Dynamics.Tests
 
                 methodDefinition.ReturnType.Should().Be(Type.GetType("System.Void"));
                 methodDefinition.Parameters.Should().HaveCount(0);
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullActionOfT1ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Action<string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullActionOfT1T2ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Action<string, string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullActionOfT1T2T3ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Action<string, string, string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullActionOfT1T2T3T4ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Action<string, string, string, string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullFuncOfT1ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Func<string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullFuncOfT1T2ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Func<string, string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullFuncOfT1T2T3ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Func<string, string, string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullFuncOfT1T2T3T4ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Func<string, string, string, string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithANullFuncOfT1T2T3T4T5ThenShouldThrowArgumentNullException()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                Action act = () => typeDefinition.HasMethod(default(Expression<Func<string, string, string, string, string>>));
+
+                act.ShouldThrow<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnActionOfT1ThenShouldReturnADefinitionWithOneParametersAndVoidReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass>(obj => obj.SomeMethod());
+
+                methodDefinition.ReturnType.Should().Be(Type.GetType("System.Void"));
+                methodDefinition.Parameters.Should().HaveCount(1);
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnActionOfT1T2ThenShouldReturnADefinitionWithTwoParametersAndVoidReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass, TestClass>((obj, obj2) => obj.SomeMethod());
+
+                methodDefinition.ReturnType.Should().Be(Type.GetType("System.Void"));
+                methodDefinition.Parameters.Should().HaveCount(2);
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnActionOfT1T2T3ThenShouldReturnADefinitionWithThreeParametersAndVoidReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass, TestClass, TestClass>((obj, obj2, obj3) => obj.SomeMethod());
+
+                methodDefinition.ReturnType.Should().Be(Type.GetType("System.Void"));
+                methodDefinition.Parameters.Should().HaveCount(3);
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnActionOfT1T2T3T4ThenShouldReturnADefinitionWithFourParametersAndVoidReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass, TestClass, TestClass, TestClass>((obj, obj2, obj3, obj4) => obj.SomeMethod());
+
+                methodDefinition.ReturnType.Should().Be(Type.GetType("System.Void"));
+                methodDefinition.Parameters.Should().HaveCount(4);
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnFuncOfT1ThenShouldReturnADefinitionWithNoParametersAndTestClassReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass>(() => new TestClass());
+
+                methodDefinition.ReturnType.Should().Be(typeof(TestClass));
+                methodDefinition.Parameters.Should().HaveCount(0);
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnFuncOfT1T2ThenShouldReturnADefinitionWithOneParametersAndTestClassReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass, TestClass>((cls) => cls);
+
+                methodDefinition.ReturnType.Should().Be(typeof(TestClass));
+                methodDefinition.Parameters.Should().HaveCount(1);
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnFuncOfT1T2T3ThenShouldReturnADefinitionWithTwoParametersAndTestClassReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass, TestClass, TestClass>((cls, cls1) => cls);
+
+                methodDefinition.ReturnType.Should().Be(typeof(TestClass));
+                methodDefinition.Parameters.Should().HaveCount(2);
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnFuncOfT1T2T3T4ThenShouldReturnADefinitionWithThreeParametersAndTestClassReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass, TestClass, TestClass, TestClass>((cls, cls1, cls2) => cls);
+
+                methodDefinition.ReturnType.Should().Be(typeof(TestClass));
+                methodDefinition.Parameters.Should().HaveCount(3);
+            }
+
+            [Fact]
+            public void WhenProvidedWithAnFuncOfT1T2T3T4T5ThenShouldReturnADefinitionWithFourParametersAndTestClassReturnType()
+            {
+                var typeDefinition = new TypeDefinition();
+
+                var methodDefinition = typeDefinition.HasMethod<TestClass, TestClass, TestClass, TestClass, TestClass>((cls, cls1, cls2, cls3) => cls);
+
+                methodDefinition.ReturnType.Should().Be(typeof(TestClass));
+                methodDefinition.Parameters.Should().HaveCount(4);
+            }
+
+            private class TestClass
+            {
+                internal void SomeMethod() { }
+                internal TestClass SomeOtherMethod() => this;
             }
         }
 

@@ -9,6 +9,9 @@ namespace Compose.Dynamics
     {
         public static IConstructorDefinition Takes<T>(this IConstructorDefinition constructorDefinition, string parameterName)
         {
+            if (constructorDefinition == null)
+                throw new ArgumentNullException(nameof(constructorDefinition));
+
             if (string.IsNullOrWhiteSpace(parameterName))
                 throw new ArgumentNullException(nameof(parameterName));
 
@@ -18,6 +21,9 @@ namespace Compose.Dynamics
 
         public static IConstructorDefinition Takes(this IConstructorDefinition constructorDefinition, IParameterDefinition parameter)
         {
+            if (constructorDefinition == null)
+                throw new ArgumentNullException(nameof(constructorDefinition));
+
             if (parameter == null)
                 throw new ArgumentNullException(nameof(parameter));
 
@@ -27,6 +33,9 @@ namespace Compose.Dynamics
 
         public static IConstructorDefinition Takes(this IConstructorDefinition constructorDefinition, IEnumerable<IParameterDefinition> parameters)
         {
+            if (constructorDefinition == null)
+                throw new ArgumentNullException(nameof(constructorDefinition));
+
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 

@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB74FCD
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Compose.Dynamics", "src\Compose.Dynamics\Compose.Dynamics.xproj", "{25FF294E-520D-4AEF-9A04-EE96560735D2}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Compose.Dynamics.Tests", "tests\Compose.Dynamics.Tests\Compose.Dynamics.Tests.xproj", "{788B58D4-C2C8-40F3-8617-75F99D47827E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Compose.Dynamics.Tests", "tests\Compose.Dynamics.Tests\Compose.Dynamics.Tests.xproj", "{84484400-D390-46D8-9087-3D99D59C154E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,16 +29,16 @@ Global
 		{25FF294E-520D-4AEF-9A04-EE96560735D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25FF294E-520D-4AEF-9A04-EE96560735D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25FF294E-520D-4AEF-9A04-EE96560735D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{788B58D4-C2C8-40F3-8617-75F99D47827E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{788B58D4-C2C8-40F3-8617-75F99D47827E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{788B58D4-C2C8-40F3-8617-75F99D47827E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{788B58D4-C2C8-40F3-8617-75F99D47827E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84484400-D390-46D8-9087-3D99D59C154E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84484400-D390-46D8-9087-3D99D59C154E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84484400-D390-46D8-9087-3D99D59C154E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84484400-D390-46D8-9087-3D99D59C154E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{25FF294E-520D-4AEF-9A04-EE96560735D2} = {C2FF1164-26AD-4238-B0D9-A9ACF7496776}
-		{788B58D4-C2C8-40F3-8617-75F99D47827E} = {0AB74FCD-5606-4677-819E-D311A63DF71C}
+		{84484400-D390-46D8-9087-3D99D59C154E} = {0AB74FCD-5606-4677-819E-D311A63DF71C}
 	EndGlobalSection
 EndGlobal
